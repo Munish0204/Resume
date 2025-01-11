@@ -1,18 +1,27 @@
 import React from "react";
 import Navbar from "./Navbar";
 import "../styles/home.css";
+import resumeTemplate from "../assets/resume-template.png.jpeg"; // Adjust the path as needed
 
 const Home = () => {
     return (
-
         <div className="home-container">
-             <Navbar />
+            <Navbar />
             <header className="home-header">
                 <h1>DreamTrail</h1>
                 <p>Enhance your career prospects with our smart tools.</p>
+               
             </header>
 
             <section className="home-intro">
+            <img src={resumeTemplate} alt="Resume Template" className="resume-template" />
+                    <div className="resume-template-content">
+                    <h2 className="title">Professional Resume</h2>
+                    <p className="description">Start building your professional resume with our easy-to-use templates.</p>
+                    <a href="/build-resume" className="cta-btn">Build Resume</a>
+                </div>
+
+
                 <p>
                     Our platform helps you build professional resumes and checks their compatibility with Applicant Tracking Systems (ATS) to ensure you stand out in job applications.
                 </p>

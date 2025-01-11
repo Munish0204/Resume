@@ -4,6 +4,8 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
+import Profile from "./pages/Profile";
+import ResumeBuilder from "./pages/ResumeBuilder";
 import './styles/global.css';
 import './styles/auth.css';
 import { AuthProvider } from "./context/AuthContext";
@@ -20,6 +22,8 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/resume-builder" element={<ResumeBuilder />} />
             </Routes>
           </Router>
         </div>

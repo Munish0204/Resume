@@ -16,7 +16,7 @@
       return (
         <nav className="navbar">
           <div className="navbar-logo">
-            <Link to="/">ATS Checker</Link>
+            <Link to="/">Dream Trail</Link>
           </div>
           <ul className="navbar-links">
                  <li><Link to="/features">Features</Link></li>

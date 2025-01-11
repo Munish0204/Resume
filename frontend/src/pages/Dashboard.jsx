@@ -6,8 +6,8 @@ import Nav2 from "./Nav 2"; // Assuming you have Nav2 component for the Navbar
 const Dashboard = () => {
   // Example user data, this could be fetched from your context or API
   const user = {
-    name: "John Doe",
-    email: "john.doe@example.com",
+    name: "Muneeswaran",
+    email: "munishwaran933@gamil.com",
     profilePic: "https://via.placeholder.com/150", // Example profile picture
     recentResumes: [
       { title: "Software Engineer Resume", atsScore: 85 },
