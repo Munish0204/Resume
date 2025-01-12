@@ -12,16 +12,30 @@ const Navbar = () => {
     navigate("/login"); // Redirect to login page after logout
   };
 
+  const scrollToSection = (id) => {
+    const section = document.getElementById(id);
+    if (section) {
+      section.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   return (
     <nav className="navbar">
       <div className="navbar-logo">
         <Link to="/">Dream Trail</Link>
       </div>
       <ul className="navbar-links">
-        <li><Link to="/features">Features</Link></li>
-        <li><Link to="/about">About</Link></li>
-        <li><Link to="/contact">Contact</Link></li>
-        <li><button onClick={handleLogout} className="navbar-login">LOGIN</button></li>
+        {/* Smooth scrolling links */}
+        <li onClick={() => scrollToSection("features")}>Features</li>
+        <li onClick={() => scrollToSection("about")}>About</li>
+        <li onClick={() => scrollToSection("contact")}>Contact</li>
+
+        {/* Logout functionality */}
+        <li>
+          <button onClick={handleLogout} className="navbar-login">
+            LOGIN
+          </button>
+        </li>
       </ul>
     </nav>
   );

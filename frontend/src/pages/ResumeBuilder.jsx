@@ -1,176 +1,42 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import "../styles/resumeBuilder.css"; 
+import React, { useState } from 'react';
+import '../styles/ResumeBuilder.css'; // Import your CSS
 
 const ResumeBuilder = () => {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    skills: "",
-    education: "",
-    experience: "",
-    summary: "",
-  });
+  const [template, setTemplate] = useState('double-column'); // Default template
 
-  const [selectedTemplate, setSelectedTemplate] = useState(null);
-  const [isEditing, setIsEditing] = useState(true);
-  const navigate = useNavigate();
+  const templates = [
+    { id: 'double-column', name: 'Double Column', description: 'Free, Two Column resume template. The most popular choice for most roles, including programming & marketing.', image: "double-column.jpg" }, // Replace with actual image path
+    { id: 'ivy-league', name: 'Ivy League', description: 'The classic Harvard template, updated for the 21st century with a refined design that recruiters love and an optimized layout.', image: "ivy-league.jpg" }, // Replace with actual image path
+    { id: 'elegant', name: 'Elegant', description: 'Elegant template with a beautiful design and compact, easy-to-read layout that highlights your strengths and achievements.', image: "elegant.jpg" }, // Replace with actual image path
+  ];
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Resume data submitted:", formData);
-    navigate("/dashboard");
-  };
-
-  const selectTemplate = (template) => {
-    setSelectedTemplate(template);
-  };
-
-  const toggleEdit = () => {
-    setIsEditing(!isEditing);
+  const handleTemplateSelect = (id) => {
+    setTemplate(id);
   };
 
   return (
     <div className="resume-builder">
-      <h1>Create Your Professional Resume</h1>
-
-      {!selectedTemplate && (
-        <div className="template-selection">
-          <h2>Select a Template</h2>
-          <div className="template-options">
-            <div className="template-card" onClick={() => selectTemplate("template1")}>
-              <img src="/images/template1-preview.png" alt="Template 1" />
-              <p>Modern Template</p>
-            </div>
-            <div className="template-card" onClick={() => selectTemplate("template2")}>
-              <img src="/images/template2-preview.png" alt="Template 2" />
-              <p>Classic Template</p>
-            </div>
+      <h2>Choose a Resume Template</h2>
+      <div className="template-grid">
+        {templates.map((t) => (
+          <div
+            key={t.id}
+            className={`template-card ${template === t.id ? 'selected' : ''}`}
+            onClick={() => handleTemplateSelect(t.id)}
+          >
+            <img src={t.image} alt={t.name} />
+            <h3>{t.name}</h3>
+            <p>{t.description}</p>
+            <button>Customize This Template</button>
           </div>
-        </div>
-      )}
-
-      {selectedTemplate && (
-        <div className="resume-form-container">
-          <div className="template-preview">
-            {selectedTemplate === "template1" ? (
-              <div className="template1-preview">
-                <h3>Modern Template</h3>
-                <p><strong>Name:</strong> {formData.name}</p>
-                <p><strong>Email:</strong> {formData.email}</p>
-                <p><strong>Phone:</strong> {formData.phone}</p>
-                <p><strong>Skills:</strong> {formData.skills}</p>
-                <p><strong>Education:</strong> {formData.education}</p>
-                <p><strong>Experience:</strong> {formData.experience}</p>
-                <p><strong>Summary:</strong> {formData.summary}</p>
-              </div>
-            ) : (
-              <div className="template2-preview">
-                <h3>Classic Template</h3>
-                <p><strong>Name:</strong> {formData.name}</p>
-                <p><strong>Email:</strong> {formData.email}</p>
-                <p><strong>Phone:</strong> {formData.phone}</p>
-                <p><strong>Summary:</strong> {formData.summary}</p>
-                <p><strong>Skills:</strong> {formData.skills}</p>
-                <p><strong>Experience:</strong> {formData.experience}</p>
-                <p><strong>Education:</strong> {formData.education}</p>
-              </div>
-            )}
-          </div>
-
-          <div className="form-controls">
-            <button onClick={toggleEdit} className="toggle-btn">
-              {isEditing ? "Preview" : "Edit"}
-            </button>
-            {isEditing ? (
-              <form onSubmit={handleSubmit} className="resume-form">
-                <div className="form-group">
-                  <label>Name</label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Email</label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Phone</label>
-                  <input
-                    type="text"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Skills</label>
-                  <textarea
-                    name="skills"
-                    value={formData.skills}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Education</label>
-                  <textarea
-                    name="education"
-                    value={formData.education}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Experience</label>
-                  <textarea
-                    name="experience"
-                    value={formData.experience}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Summary</label>
-                  <textarea
-                    name="summary"
-                    value={formData.summary}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-                <button type="submit" className="submit-btn">
-                  Save Resume
-                </button>
-              </form>
-            ) : (
-              <button onClick={handleSubmit} className="submit-btn">
-                Save Resume
-              </button>
-            )}
-          </div>
-        </div>
-      )}
+        ))}
+      </div>
+      {/*Preview Area (Simplified)*/}
+      <div className="preview-area">
+        <h3>Preview (Simplified)</h3>
+        <p>Selected Template: {template}</p>
+        {/* In a real application, you would render a dynamic preview here based on the selected template and user input */}
+      </div>
     </div>
   );
 };

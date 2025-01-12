@@ -5,6 +5,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
+import ResumeChecker from "./pages/ResumeChecker";
 import ResumeBuilder from "./pages/ResumeBuilder";
 import './styles/global.css';
 import './styles/auth.css';
@@ -20,10 +21,11 @@ function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
+              <Route path="/build-resume"element={<ResumeBuilder/>}/>
               <Route path="/register" element={<Register />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/profile" element={<Profile />} />
-              <Route path="/resume-builder" element={<ResumeBuilder />} />
+              <Route path="/check-score" element={<ResumeChecker />} />
             </Routes>
           </Router>
         </div>
