@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { useNavigate } from "react-router-dom";
 import "../styles/ResumeChecker.css";
 import videoFile from "../assets/resume-video.mp4";
+import skill from "../assets/ats.mp4"
 
 const ResumeChecker = () => {
   const navigate = useNavigate();
@@ -149,6 +150,63 @@ const ResumeChecker = () => {
           </div>
         </div>
       </div>
+
+      <div className="page-container">
+  <div className="content-container">
+    {/* Video Section */}
+    <div className="video-section">
+        <video 
+          src={skill} 
+          className="video" 
+          autoPlay 
+           loop 
+           muted 
+           controls={false} 
+           alt="Score Template Video"
+          />
+    </div>
+
+    {/* Text Section */}
+    <div className="text-section">
+      <h1>Get a free ATS resume scan, powered by Artificial Intelligence</h1>
+      <p>
+        Companies often receive hundreds of resumes for every job posting they put out. They and their hiring managers
+        don't have the time to go through each resume individually, so they use software, often called Applicant
+        Tracking Systems (ATS), to filter through all the resumes they receive.
+      </p>
+      <p>
+        You need to make sure your resume is read correctly by these ATS and resume screening software. If it is not,
+        your resume could get instantly rejected by these systems and never make its way to a recruiter or hiring manager.
+      </p>
+      <p>
+        Our resume scanner evaluates whether your resume will be read correctly by ATS, i.e., if it is ATS compliant.
+        In addition, it also gives you detailed feedback on key criteria recruiters and hiring managers look for, for free.
+      </p>
+      <a href="#" className="cta-button">
+        Start the ATS resume test »
+      </a>
+    </div>
+  </div>
+</div>
+<div class="toolkit-container">
+  <h2>The most complete resume toolkit</h2>
+
+  <div class="toolkit-item">
+    <h3>Targeted Resume</h3>
+    <p>Try our resume keyword scanner which scans both your resume and the job description you're applying to (like an ATS would).</p>
+  </div>
+
+  <div class="toolkit-item">
+    <h3>LinkedIn Review</h3>
+    <p>Get actionable insights on how to improve your LinkedIn profile by using our LinkedIn profile checker.</p>
+  </div>
+
+  <div class="toolkit-item">
+    <h3>ATS Resume Templates</h3>
+    <p>Download free ATS-friendly resume templates that are perfectly readable and compatible with all ATS.</p>
+  </div>
+</div>
+            
     </div>
   );
 };

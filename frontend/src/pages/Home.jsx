@@ -172,6 +172,19 @@ const Home = () => {
                     <button type="submit" className="submit-btn">Submit</button>
                 </form>
             </section>
+            <div class="wave-container">
+            <svg class="wave"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 1440 320"
+             >
+            <path
+             fill="#4b0082"
+             d="M0,128L48,138.7C96,149,192,171,288,165.3C384,160,480,128,576,133.3C672,139,768,181,864,192C960,203,1056,181,1152,165.3C1248,149,1344,139,1392,133.3L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
+            ></path>
+             </svg>
+</div>
+
+            
             </section>
 
             <footer className="home-footer">
