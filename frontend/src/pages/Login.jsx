@@ -30,8 +30,8 @@ const Login = () => {
       toast.success("Login Successful");
       navigate("/dashboard"); // Redirect to dashboard after successful login
     } catch (err) {
-      setError(err.response?.data?.error || "Login failed. Please try again.");
-      toast.error(err.response?.data?.error || "Login failed. Please try again.");
+      setError(err.response?.data?.error || "Login failed.Please Check if you Signup...!");
+      toast.error(err.response?.data?.error || "Login failed.Please Check if you Signup...!");
     }
   };
 
