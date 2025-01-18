@@ -4,14 +4,13 @@ import { GoogleLogin } from '@react-oauth/google';
 import { toast } from "react-toastify";
 import axios from "axios";
 import { baseurl } from "../utils/url";
-import { AuthContext } from "../context/AuthContext";
 import '../styles/auth.css';
 
 const Login = () => {
   const [username, setUsername] = useState(""); // Define state for username
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const { login } = useContext(AuthContext); // Destructure the login function from AuthContext
+ 
   const navigate = useNavigate();
 
   // Handle email/password login
