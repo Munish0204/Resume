@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+import { toast } from "react-toastify";
+import axios from "axios";
+import { baseurl } from "../utils/url";
 import '../styles/auth.css';
 
 const Register = () => {
@@ -36,6 +39,42 @@ const Register = () => {
     setConfirmPassword("");
   };
 
+  const formData = new FormData();
+        formData.append("username", username);
+        formData.append("password", password);
+        formData.append("phone", phone);
+        formData.append("email", email);
+
+        axios.post(`${baseurl}/signup/`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        }).then((res) => {
+            if (res.data.message === "User Created Successfully") {
+                toast.success("Registration Successful", { autoClose: 5000, position: "top-right" });
+                onToggleFlip();
+            } else {
+                for (let m in res.data) {
+                    toast.error(res.data[m][0], { autoClose: 5000, position: "top-right" });
+                }
+            }
+        }).catch((err) => {
+            console.log(err)
+            for (let key in err.response.data) {
+                toast.error(err.response.data[key], { autoClose: 5000, position: "top-right" })
+            }
+            if (err.response.data['message']) {
+                toast.error(err.response.data['message'][0], { autoClose: 5000, position: "top-right" })
+            }
+        });
+    }
+
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+        e.preventDefault(); // Prevents the default form submission
+        Submit();
+    }
+
   return (
     <div className="register-container">
       <h2>Register</h2>
@@ -62,6 +101,8 @@ const Register = () => {
             required
           />
         </div>
+
+
         <div className="form-group">
           <label>Password</label>
           <input
