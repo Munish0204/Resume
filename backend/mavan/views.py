@@ -64,27 +64,39 @@ class CustomAuthToken(APIView):
 
     def post(self, request, *args, **kwargs):
         try:
-            username = request.data.get("username")
+            identifier = request.data.get("username")  # Accepting 'username' or 'email' as 'identifier'.
             password = request.data.get("password")
-            if username is None or password is None:
-                raise Exception
-        except:
+
+            if identifier is None or password is None:
+                raise ValueError("Please provide both fields (username/email) and password.")
+        except ValueError as e:
             return Response(
-                {"error": "Please Provide Username and Password"},
+                {"error": str(e)},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        user = authenticate(request, username=username, password=password)
+        # Check if the identifier is an email or username
+        if "@" in identifier and "." in identifier:
+            # Treat identifier as an email
+            user = authenticate(request, email=identifier, password=password)
+        else:
+            # Treat identifier as a username
+            user = authenticate(request, username=identifier, password=password)
 
         if user is not None:
             token, created = Token.objects.get_or_create(user=user)
             return Response(
-                {"token": token.key, "username": user.username, "email": user.email},
+                {
+                    "token": token.key,
+                    "username": user.username,
+                    "email": user.email,
+                },
                 status=status.HTTP_200_OK,
             )
         else:
             return Response(
-                {"error": "Invalid Credentials"}, status=status.HTTP_400_BAD_REQUEST
+                {"error": "Invalid credentials"},
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
 
