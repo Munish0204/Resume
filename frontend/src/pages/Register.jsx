@@ -9,6 +9,7 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [phone, setPhone] = useState(""); // New state for phone
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
@@ -18,7 +19,7 @@ const Register = () => {
     setSuccess("");
 
     // Validation
-    if (!name || !email || !password || !confirmPassword) {
+    if (!name || !email || !password || !confirmPassword || !phone) {
       setError("Please fill in all fields.");
       return;
     }
@@ -30,50 +31,61 @@ const Register = () => {
       setError("Password must be at least 6 characters.");
       return;
     }
+    if (!/^\d{10}$/.test(phone)) { // Basic phone validation for 10-digit numbers
+      setError("Please enter a valid 10-digit phone number.");
+      return;
+    }
 
-    // Simulate successful registration
-    setSuccess("Registration successful! Please login.");
-    setName("");
-    setEmail("");
-    setPassword("");
-    setConfirmPassword("");
+    // Create FormData
+    const formData = new FormData();
+    formData.append("username", name);
+    formData.append("password", password);
+    formData.append("email", email);
+    formData.append("phone", phone); // Include phone number
+
+    axios
+      .post(`${baseurl}/signup/`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      })
+      .then((res) => {
+        if (res.data.message === "User Created Successfully") {
+          toast.success("Registration Successful", {
+            autoClose: 5000,
+            position: "top-right",
+          });
+          setSuccess("Registration successful! Please login.");
+          setName("");
+          setEmail("");
+          setPassword("");
+          setConfirmPassword("");
+          setPhone(""); // Reset phone field
+        } else {
+          for (let m in res.data) {
+            toast.error(res.data[m][0], {
+              autoClose: 5000,
+              position: "top-right",
+            });
+          }
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        for (let key in err.response.data) {
+          toast.error(err.response.data[key], {
+            autoClose: 5000,
+            position: "top-right",
+          });
+        }
+        if (err.response.data["message"]) {
+          toast.error(err.response.data["message"][0], {
+            autoClose: 5000,
+            position: "top-right",
+          });
+        }
+      });
   };
-
-  const formData = new FormData();
-        formData.append("username", username);
-        formData.append("password", password);
-        formData.append("phone", phone);
-        formData.append("email", email);
-
-        axios.post(`${baseurl}/signup/`, formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }
-        }).then((res) => {
-            if (res.data.message === "User Created Successfully") {
-                toast.success("Registration Successful", { autoClose: 5000, position: "top-right" });
-                onToggleFlip();
-            } else {
-                for (let m in res.data) {
-                    toast.error(res.data[m][0], { autoClose: 5000, position: "top-right" });
-                }
-            }
-        }).catch((err) => {
-            console.log(err)
-            for (let key in err.response.data) {
-                toast.error(err.response.data[key], { autoClose: 5000, position: "top-right" })
-            }
-            if (err.response.data['message']) {
-                toast.error(err.response.data['message'][0], { autoClose: 5000, position: "top-right" })
-            }
-        });
-    }
-
-  const handleKeyPress = (e) => {
-    if (e.key === "Enter") {
-        e.preventDefault(); // Prevents the default form submission
-        Submit();
-    }
 
   return (
     <div className="register-container">
@@ -101,8 +113,16 @@ const Register = () => {
             required
           />
         </div>
-
-
+        <div className="form-group">
+          <label>Phone</label>
+          <input
+            type="tel"
+            placeholder="Enter your phone number"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            required
+          />
+        </div>
         <div className="form-group">
           <label>Password</label>
           <input

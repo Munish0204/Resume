@@ -1,42 +1,67 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { GoogleLogin } from '@react-oauth/google';
-import { AuthContext } from "../context/AuthContext"; // Assuming you have an AuthContext for managing auth state
+import { toast } from "react-toastify";
+import axios from "axios";
+import { baseurl } from "../utils/url";
+import { AuthContext } from "../context/AuthContext";
 import '../styles/auth.css';
 
 const Login = () => {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState(""); // Define state for username
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const { login } = useContext(AuthContext); // Destructure the login function from AuthContext
-  const navigate = useNavigate(); // Use navigate hook for redirection
+  const navigate = useNavigate();
 
   // Handle email/password login
   const handleLogin = async (e) => {
     e.preventDefault();
-    if (!email || !password) {
+    setError(""); // Clear previous errors
+    if (!username || !password) {
       setError("Please fill in all fields.");
       return;
     }
 
     try {
-      await login(email, password); // Assume login function handles authentication
+      const res = await axios.post(`${baseurl}/login/`, { username, password });
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("email", res.data.email);
+      localStorage.setItem("username", res.data.username);
+      toast.success("Login Successful");
       navigate("/dashboard"); // Redirect to dashboard after successful login
     } catch (err) {
-      setError("Login failed. Please try again.");
+      setError(err.response?.data?.error || "Login failed. Please try again.");
+      toast.error(err.response?.data?.error || "Login failed. Please try again.");
     }
   };
 
   // Handle Google login response
   const handleGoogleLogin = (response) => {
-    // Handle Google login success
     if (response?.credential) {
       alert(`Google login successful: ${response.credential}`);
-      navigate("/dashboard"); // Redirect to dashboard after Google login
+      navigate("/dashboard");
     } else {
       alert("Google login failed. Please try again.");
     }
   };
+
+  useEffect(() => {
+    document.title = "Login";
+    const token = localStorage.getItem("token");
+    if (token) {
+      axios.get(`${baseurl}/checkAuth/`, {
+        headers: { Authorization: `Token ${token}` },
+      })
+        .then((res) => {
+          if (res.data.message === "Authenticated") {
+            localStorage.setItem("username", res.data.username);
+            navigate("/dashboard");
+          }
+        })
+        .catch((err) => console.log(err));
+    }
+  }, [navigate]);
 
   return (
     <div className="login-container">
@@ -44,12 +69,12 @@ const Login = () => {
       {error && <p className="error-message">{error}</p>}
       <form onSubmit={handleLogin} className="login-form">
         <div className="form-group">
-          <label>Email</label>
+          <label>Username</label>
           <input
-            type="email"
-            placeholder="Enter your email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            type="text"
+            placeholder="Enter your username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
             required
           />
         </div>
@@ -64,13 +89,11 @@ const Login = () => {
           />
         </div>
 
-        {/* Google Login Button */}
         <GoogleLogin
           onSuccess={handleGoogleLogin}
           onError={() => alert("Google login failed!")}
         />
 
-        {/* Regular Login Button */}
         <button type="submit" className="login-btn">
           Login
         </button>

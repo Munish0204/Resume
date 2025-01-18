@@ -16,7 +16,6 @@ def register(request):
     if request.method == "POST":
         try:
             serializer = serializers.UserSerializer(data=request.data)
-            ic(serializer)
             if not request.data.get("email"):
                 return Response(
                     {"email": "Please Provide your Mail Address"},
