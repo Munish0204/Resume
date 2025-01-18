@@ -39,12 +39,12 @@ const Login = () => {
   const handleGoogleLogin = async (response) => {
     if (response?.credential) {
       try {
-        // Send the Google token to the Django backend for verification
+        
         const res = await axios.post(`${baseurl}/google-login/`, {
           token: response.credential
         });
   
-        // Save the JWT token to localStorage
+        
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("email", res.data.email);
         localStorage.setItem("username", res.data.username);
