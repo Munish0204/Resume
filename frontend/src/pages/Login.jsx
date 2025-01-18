@@ -36,14 +36,30 @@ const Login = () => {
   };
 
   // Handle Google login response
-  const handleGoogleLogin = (response) => {
+  const handleGoogleLogin = async (response) => {
     if (response?.credential) {
-      alert(`Google login successful: ${response.credential}`);
-      navigate("/dashboard");
+      try {
+        // Send the Google token to the Django backend for verification
+        const res = await axios.post(`${baseurl}/google-login/`, {
+          token: response.credential
+        });
+  
+        // Save the JWT token to localStorage
+        localStorage.setItem("token", res.data.token);
+        localStorage.setItem("email", res.data.email);
+        localStorage.setItem("username", res.data.username);
+  
+        toast.success("Google Login Successful");
+        navigate("/dashboard");
+      } catch (err) {
+        toast.error("Google login failed. Please try again.");
+        console.log(err);
+      }
     } else {
-      alert("Google login failed. Please try again.");
+      toast.error("Google login failed. Please try again.");
     }
   };
+  
 
   useEffect(() => {
     document.title = "Login";
