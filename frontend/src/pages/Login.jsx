@@ -7,7 +7,7 @@ import { baseurl } from "../utils/url";
 import '../styles/auth.css';
 
 const Login = () => {
-  const [username, setUsername] = useState(""); // Define state for username
+  const [identifier, setIdentifier] = useState(""); // Define state for username or email
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
  
@@ -17,13 +17,13 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     setError(""); // Clear previous errors
-    if (!username || !password) {
+    if (!identifier || !password) {
       setError("Please fill in all fields.");
       return;
     }
 
     try {
-      const res = await axios.post(`${baseurl}/login/`, { username, password });
+      const res = await axios.post(`${baseurl}/login/`, { identifier, password });
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("email", res.data.email);
       localStorage.setItem("username", res.data.username);
@@ -68,12 +68,12 @@ const Login = () => {
       {error && <p className="error-message">{error}</p>}
       <form onSubmit={handleLogin} className="login-form">
         <div className="form-group">
-          <label>Username</label>
+          <label>Username or Email</label>
           <input
             type="text"
-            placeholder="Enter your username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            placeholder="Enter your username or email"
+            value={identifier}
+            onChange={(e) => setIdentifier(e.target.value)}
             required
           />
         </div>

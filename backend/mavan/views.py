@@ -64,7 +64,7 @@ class CustomAuthToken(APIView):
 
     def post(self, request, *args, **kwargs):
         try:
-            identifier = request.data.get("username")  # Accepting 'username' or 'email' as 'identifier'.
+            identifier = request.data.get("identifier")  # Accepting 'username' or 'email' as 'identifier'.
             password = request.data.get("password")
 
             if identifier is None or password is None:
