@@ -1,13 +1,27 @@
 from rest_framework import serializers
 from . import models
 
+class ResumeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Resume
+        fields = ['id', 'title', 'ats_score']
+
+class NotificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Notification
+        fields = ['id', 'message', 'created_at']
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)  # Password field for writing only
     phone = serializers.CharField(required=False)
+    resumes = ResumeSerializer(many=True, read_only=True)
+    notifications = NotificationSerializer(many=True, read_only=True)
 
     class Meta:
+
         model = models.user
-        fields = ["username", "email", "password", "phone"]
+        fields = [
+            'id', 'username', 'email', 'phone', 'password','stats_resumes_created','stats_ats_checks', 'resumes', 'notifications'
+        ]
 
     def create(self, validated_data):
         user = models.user(email=validated_data["email"], username=validated_data["username"],phone=validated_data["phone"])

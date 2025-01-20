@@ -3,12 +3,15 @@ from . import models, serializers
 from django.contrib.auth.models import User
 from django.contrib.auth.models import Group
 from django.contrib.auth import authenticate
-from rest_framework import generics, status
+from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.decorators import api_view,permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.authtoken.models import Token
+from . import serializers
+from google.oauth2 import id_token
+from google.auth.transport import requests
 
 @api_view(["POST"])
 @permission_classes([AllowAny])
@@ -43,7 +46,7 @@ def register(request):
                         status=status.HTTP_400_BAD_REQUEST,
                     )
                 user = serializer.save()
-                token, created = Token.objects.get_or_create(user=user)
+                token, _ = Token.objects.get_or_create(user=user)
                 group = Group.objects.get_or_create(name="user")[0]
                 user.groups.add(group)
                 cont = serializer.data
@@ -58,11 +61,53 @@ def register(request):
                 {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
+class GoogleAuth(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        token = request.data.get("token")
+        if not token:
+            return Response({"error": "Token is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            CLIENT_ID = "692671428816-9nuh184hhkqkbtkfi57ihucla6ag5f2g.apps.googleusercontent.com"
+            idinfo = id_token.verify_oauth2_token(token, requests.Request(), CLIENT_ID)
+            if idinfo['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
+                raise ValueError('Wrong issuer.')
+
+            email = idinfo['email']
+            first_name = idinfo.get('given_name', '')
+            last_name = idinfo.get('family_name', '')
+
+            user, created = User.objects.get_or_create(email=email, defaults={
+                'username': email,
+                'first_name': first_name,
+                'last_name': last_name
+            })
+
+            if created:
+                user.set_unusable_password()
+                user.save()
+                group = Group.objects.get_or_create(name="user")[0]
+                user.groups.add(group)
+
+            token, _ = Token.objects.get_or_create(user=user)
+            return Response({
+                "token": token.key,
+                "username": user.username,
+                "email": user.email,
+                "first_name": user.first_name,
+                "last_name": user.last_name,
+                "message": "User signed in successfully" if not created else "User signed up successfully"
+            }, status=status.HTTP_200_OK)
+
+        except ValueError as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 class CustomAuthToken(APIView):
     permission_classes = [AllowAny]
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request):
         try:
             identifier = request.data.get("identifier")  # Accepting 'username' or 'email' as 'identifier'.
             password = request.data.get("password")
@@ -78,7 +123,10 @@ class CustomAuthToken(APIView):
         # Check if the identifier is an email or username
         if "@" in identifier and "." in identifier:
             # Treat identifier as an email
-            user = authenticate(request, email=identifier, password=password)
+            user = User.objects.filter(email=identifier).first()
+            if user:
+                user = authenticate(request, username=user.username, password=password)
+            
         else:
             # Treat identifier as a username
             user = authenticate(request, username=identifier, password=password)
@@ -112,3 +160,21 @@ def logout(request):
 @permission_classes([IsAuthenticated])
 def checkAuth(request):
     return Response({"message": "Authenticated", "username": request.user.username})
+
+class dashboard(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        user_serializer = serializers.UserSerializer(user)
+        # resume_serializer = serializers.ResumeSerializer(user.Resume..all(), many=True)
+        # notification_serializer = serializers.NotificationSerializer(user.notification_set.all(), many=True)
+        
+        data = {
+            "user": user_serializer.data,
+            # "resumes": resume_serializer.data,
+            # "notifications": notification_serializer.data,
+        }
+        
+        return Response(data)
+        return Response(serializer.data)
