@@ -9,6 +9,25 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view,permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.authtoken.models import Token
+from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework import generics, permissions
+
+
+class ResumeUploadView(generics.CreateAPIView):
+    queryset = models.Resume.objects.all()
+    serializer_class = serializers.ResumeSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+class UserResumesView(generics.ListAPIView):
+    serializer_class = serializers.ResumeSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return models.Resume.objects.filter(user=self.request.user)
 
 @api_view(["POST"])
 @permission_classes([AllowAny])

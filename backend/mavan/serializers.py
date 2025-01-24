@@ -25,3 +25,10 @@ class UserSerializer(serializers.ModelSerializer):
             instance.set_password(validated_data["password"])        
         instance.save()
         return instance
+
+
+class ResumeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Resume
+        fields = ['id', 'user', 'resume']
+        read_only_fields = ['id', 'user']
