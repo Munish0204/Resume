@@ -12,6 +12,25 @@ from rest_framework.authtoken.models import Token
 from . import serializers
 from google.oauth2 import id_token
 from google.auth.transport import requests
+from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework import generics, permissions
+
+
+class ResumeUploadView(generics.CreateAPIView):
+    queryset = models.Resume.objects.all()
+    serializer_class = serializers.ResumeSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+class UserResumesView(generics.ListAPIView):
+    serializer_class = serializers.ResumeSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return models.Resume.objects.filter(user=self.request.user)
 
 @api_view(["POST"])
 @permission_classes([AllowAny])
