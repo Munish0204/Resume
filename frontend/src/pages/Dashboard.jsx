@@ -1,28 +1,42 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import "../styles/dashboard.css"; // Import the CSS for styling
 import { Link } from "react-router-dom";
-import Nav2 from "./Nav 2"; // Assuming you have Nav2 component for the Navbar
-
+import Nav2 from "./Nav 2"; // Adjust the path to the correct location of Nav2 component
+import { baseurl } from "../utils/url";
 const Dashboard = () => {
-  // Example user data, this could be fetched from your context or API
-  const user = {
-    name: "Muneeswaran",
-    email: "munishwaran933@gamil.com",
-    profilePic: "https://via.placeholder.com/150", // Example profile picture
-    recentResumes: [
-      { title: "Software Engineer Resume", atsScore: 85 },
-      { title: "Data Scientist Resume", atsScore: 90 },
-    ],
-    notifications: [
-      "New ATS tips are available for improving your resume.",
-      "Your resume submission was successful.",
-    ],
-    stats: {
-      resumesCreated: 5,
-      atsChecks: 10,
-      profileCompleteness: 80, // Percentage
-    },
-  };
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    axios.get(`${baseurl}/dash/`, {
+      headers: {
+        Authorization: `Token ${localStorage.getItem('token')}` // Adjust the token retrieval as necessary
+      }
+    })
+      .then(response => {
+        const data = response.data;
+        setUser({
+          id: data.user['id'],
+          name: data.user['username'],
+          email: data.user['email'],
+          profilePic: "https://robohash.org/${user['username']}.jpg?size=200x200&set=set1&bgset=bg2",
+          recentResumes: data.resumes,
+          notifications: data.notifications,
+          stats: {
+            resumesCreated: data.stats_resumes_created,
+            atsChecks: data.stats_ats_checks,
+            // profileCompleteness: data.stats_profile_completeness,
+          },
+        });
+      })
+      .catch(error => {
+        console.error("There was an error fetching the user data!", error);
+      });
+  }, []);
+
+  if (!user) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="dashboard">
@@ -36,14 +50,14 @@ const Dashboard = () => {
               <p>Email: {user.email}</p>
               <p>Resumes Created: {user.stats.resumesCreated}</p>
               <p>ATS Checks: {user.stats.atsChecks}</p>
-              <p>Profile Completeness: {user.stats.profileCompleteness}%</p>
+              {/* <p>Profile Completeness: {user.stats.profileCompleteness}%</p> */}
             </div>
           </div>
 
           <section className="dashboard-notifications">
             <h2>Notifications</h2>
             <ul>
-              {user.notifications.map((notification, index) => (
+              {user.notifications && user.notifications.map((notification, index) => (
                 <li key={index}>{notification}</li>
               ))}
             </ul>
@@ -52,7 +66,7 @@ const Dashboard = () => {
           <section className="dashboard-activity">
             <h2>Your Recent Resumes</h2>
             <div className="resume-list">
-              {user.recentResumes.map((resume, index) => (
+              {user.recentResumes && user.recentResumes.map((resume, index) => (
                 <div key={index} className="resume-item">
                   <h3>{resume.title}</h3>
                   <p>ATS Score: {resume.atsScore}</p>
