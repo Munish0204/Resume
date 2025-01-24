@@ -131,3 +131,16 @@ def logout(request):
 @permission_classes([IsAuthenticated])
 def checkAuth(request):
     return Response({"message": "Authenticated", "username": request.user.username})
+
+
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])  # Requires authentication
+def upload_resume(request):
+    if 'resume' not in request.FILES:
+        return Response({"error": "No file provided."}, status=400)
+
+    uploaded_file = request.FILES['resume']
+    # Save the file or process it
+    return Response({"message": "File uploaded successfully."}, status=200)
